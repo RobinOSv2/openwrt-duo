@@ -1,0 +1,41 @@
+#!/bin/sh
+${CVI_SHOPTS}
+#
+# Start firmware
+#
+
+export SYSTEMPATH=/etc
+
+case "$1" in
+  start)
+        echo "init mpp system..."
+        if [ -d $SYSTEMPATH/ko ]; then
+                sh $SYSTEMPATH/ko/loadsystemko.sh
+        fi
+
+        echo "Starting app..."
+
+        if [ -f $SYSTEMPATH/blink.sh ]; then
+                . $SYSTEMPATH/blink.sh &
+        fi
+
+	if [ -f $SYSTEMPATH/rndis.sh ]; then
+                . $SYSTEMPATH/rndis.sh &
+        fi
+
+	if [ -f $SYSTEMPATH/auto.sh ]; then
+                usleep 30000
+                . $SYSTEMPATH/auto.sh &
+        fi
+        ;;
+  stop)
+        ;;
+  restart|reload)
+        ;;
+  *)
+        echo "Usage: $0 {start|stop|restart}"
+        exit 1
+esac
+
+exit $?
+
